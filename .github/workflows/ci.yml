@@ -35,55 +35,55 @@ jobs:
         run: pip install pytest==8.3.3
       - name: Run pytest
         run: pytest tests/ -v
-build:
-  name: Build & push ARM64 image
-  runs-on: ubuntu-latest
-  needs: [lint, test]   # 僅在 lint + test 通過後才進行 build
-  permissions:
-    contents: read
-    packages: write     # 推送到 ghcr.io 需要這個權限
-  steps:
-    - uses: actions/checkout@v5
+  build:
+    name: Build & push ARM64 image
+    runs-on: ubuntu-latest
+    needs: [lint, test]   # 僅在 lint + test 通過後才進行 build
+    permissions:
+      contents: read
+      packages: write     # 推送到 ghcr.io 需要這個權限
+    steps:
+      - uses: actions/checkout@v5
 
-    - name: Set up QEMU
-      # 讓 x86 runner 能執行 aarch64 二進位檔
-      uses: docker/setup-qemu-action@v4
-      with:
-        platforms: arm64
+      - name: Set up QEMU
+        # 讓 x86 runner 能執行 aarch64 二進位檔
+        uses: docker/setup-qemu-action@v4
+        with:
+          platforms: arm64
 
-    - name: Set up Buildx
-      uses: docker/setup-buildx-action@v4
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v4
 
-    - name: Log in to GHCR
-      # GITHUB_TOKEN 由 runner 自動提供，範圍限定在此 repo
-      uses: docker/login-action@v4
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to GHCR
+        # GITHUB_TOKEN 由 runner 自動提供，範圍限定在此 repo
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Compute image tag
-      id: meta
-      # 每次 push 都會打上短 SHA tag；main 分支額外有 :latest；
-      # PR 則使用 :pr-<number>
-      uses: docker/metadata-action@v6
-      with:
-        images: ghcr.io/${{ github.repository }}
-        tags: |
-          type=sha,format=short
-          type=ref,event=branch
-          type=ref,event=pr
-          type=raw,value=latest,enable={{is_default_branch}}
+      - name: Compute image tag
+        id: meta
+        # 每次 push 都會打上短 SHA tag；main 分支額外有 :latest；
+        # PR 則使用 :pr-<number>
+        uses: docker/metadata-action@v6
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=sha,format=short
+            type=ref,event=branch
+            type=ref,event=pr
+            type=raw,value=latest,enable={{is_default_branch}}
 
-    - name: Build and push
-      uses: docker/build-push-action@v7
-      with:
-        context: .
-        file: Dockerfile.ci
-        platforms: linux/arm64
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        # 使用 GitHub Actions cache 加速後續 build
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile.ci
+          platforms: linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # 使用 GitHub Actions cache 加速後續 build
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
