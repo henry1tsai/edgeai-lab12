@@ -7,7 +7,10 @@ Lab 12 smoke tests — 僅使用 CPU 的基本檢查，不需要 GPU。
 本地執行方式：pytest -v tests/
 """
 
+# 標準庫
 from pathlib import Path
+
+# 第三方套件
 import pytest
 
 
