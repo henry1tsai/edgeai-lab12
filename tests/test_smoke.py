@@ -48,4 +48,3 @@ def test_required_files(name):
     """檢查 Docker COPY 需要的檔案是否存在。"""
     path = Path(__file__).parent.parent / name
     assert path.exists(), f"{name} 缺失"
-    
