@@ -19,3 +19,7 @@ __pypackages__/
 .DS_Store
 # Local secrets
 .env
+# PDM
+.pdm-python
+.pdm-build/
+__pypackages__/

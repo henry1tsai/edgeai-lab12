@@ -10,6 +10,7 @@ import os
 import signal
 import sys
 import time
+
 import cv2
 import paho.mqtt.client as mqtt
 from paho.mqtt.enums import CallbackAPIVersion
