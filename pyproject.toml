@@ -15,6 +15,7 @@ dependencies = [
  # was compiled against numpy 1.x, and matplotlib (ultralytics transitive)
  # would otherwise pull numpy 2.x and break torch's C bindings at runtime.
  "numpy==1.26.4",
+ "pre-commit>=4.6.0",
 ]
 # Dev tools — installed by `pdm install -d`, NOT shipped in the container.
 # Used by the CI lint + pytest jobs (Step 1) and the local dev loop.
